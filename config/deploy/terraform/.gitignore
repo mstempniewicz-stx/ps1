@@ -1,0 +1,5 @@
+.terraform
+.idea
+
+secrets.tfvars
+aws_creds.tfvars

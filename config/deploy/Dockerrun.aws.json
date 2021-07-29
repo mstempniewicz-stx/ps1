@@ -1,0 +1,39 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [
+    {
+      "name": "nginx-cert",
+      "host": {
+        "sourcePath": "/etc/pki/tls/certs/lets_encrypt"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "%(docker_name)s",
+      "image": "%(dockerhub_account)s/%(docker_image)s:%(version_tag)s",
+      "essential": true,
+      "memoryReservation": 500,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        },
+        {
+          "hostPort": 443,
+          "containerPort": 443
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "awseb-logs-%(docker_name)s",
+          "containerPath": "/var/log/app"
+        },
+        {
+          "sourceVolume": "nginx-cert",
+          "containerPath": "/etc/letsencrypt"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+version: "3"
+services:
+  # this container will run Cypress test using built-in Electron browser
+  e2e-electron:
+    image: "cypress/included:6.4.0"
+    volumes:
+      - ./cypress:/cypress
+      - ./cypress.json:/cypress.json
+    depends_on:
+      - frontend
+    environment:
+      - CYPRESS_baseUrl=http://frontend:3000

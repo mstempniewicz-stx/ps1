@@ -1,0 +1,22 @@
+{
+  "auth": {
+    "email": "joe@example.com",
+    "firstName": "Joe",
+    "forgotLink": "Forgot your password?",
+    "getStarted": "Get started",
+    "lastName": "Example",
+    "loginButton": "Log in",
+    "loginLink": "You’ve already have an account?",
+    "loginTitle": "Log in to your account",
+    "password": "Password",
+    "registerLink": "Don't have an account yet?",
+    "resetPasswordTitle": "Reset your password",
+    "withFreeAccount": "with a free account"
+  },
+  "validation": {
+    "invalidEmail": "Invalid email",
+    "minPassword": "Too short. Password must be at least {{min}} characters.",
+    "passwordMatch": "Password doesn't match",
+    "required": "This field is required"
+  }
+}

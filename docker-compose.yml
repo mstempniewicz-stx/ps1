@@ -1,0 +1,93 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  postgres:
+    restart: always
+    image: postgres:11.4-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASS
+      POSTGRES_HOST: $DB_HOST
+      POSTGRES_PORT: $DB_PORT
+
+  backend:
+    build:
+      context: .
+      dockerfile: config/backend.Dockerfile
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./backend:/backend
+    environment:
+      - UWSGI_PY_AUTORELOAD=1 # development only
+    env_file:
+      - .env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: config/frontend.Dockerfile
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src/:/frontend/src
+      - ./frontend/public/:/frontend/public
+    environment:
+      - BROWSER=none
+      - CI=true
+
+  nginx:
+    build:
+      dockerfile: config/nginx.Dockerfile
+      context: .
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./config/nginx/nginx.conf:/var/nginx.conf
+    env_file:
+      - .env
+
+  celery:
+    build:
+      context: .
+      dockerfile: config/backend.Dockerfile
+    command: "celery -A core worker -l INFO"
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+
+  flower:
+    image: mher/flower
+    env_file:
+      - .env
+    ports:
+      - 8888:8888
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: config/backend.Dockerfile
+    command: "celery -A core beat -l INFO"
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
